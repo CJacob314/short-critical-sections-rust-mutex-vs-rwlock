@@ -2,8 +2,14 @@
 
 #[cfg(feature = "rwlock")]
 use std::sync::RwLock;
-use std::{arch::x86_64::{__rdtscp, _mm_lfence}, sync::{Arc, Mutex, atomic::{AtomicBool, AtomicU64, Ordering}}, thread, time::Duration};
+use std::{arch::x86_64::{__rdtscp, _mm_lfence}, sync::{Arc, atomic::{AtomicBool, AtomicU64, Ordering}}, thread, time::Duration};
 use std::hint::black_box;
+
+#[cfg(all(not(feature = "rwlock"), not(feature = "spinlock")))]
+use std::sync::Mutex;
+
+#[cfg(feature = "spinlock")]
+use spin::{self, Mutex};
 
 fn main() {
     #[cfg(not(feature = "rwlock"))]
@@ -39,9 +45,15 @@ fn main() {
                         black_box(*guard);
                     }
 
-                    #[cfg(not(feature = "rwlock"))]
+                    #[cfg(all(not(feature = "rwlock"), not(feature = "spinlock")))]
                     {
                         let guard = counter.lock().unwrap();
+                        black_box(*guard);
+                    }
+
+                    #[cfg(feature = "spinlock")]
+                    {
+                        let guard = counter.lock();
                         black_box(*guard);
                     }
 

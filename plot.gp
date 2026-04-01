@@ -9,4 +9,5 @@ set key outside right top
 set datafile separator whitespace
 
 plot "mutex.dat" using 1:2 with linespoints linewidth 2 pointtype 7 title "Mutex", \
-     "rwlock.dat" using 1:2 with linespoints linewidth 2 pointtype 5 title "RwLock"
+	"rwlock.dat" using 1:2 with linespoints linewidth 2 pointtype 5 title "RwLock", \
+	"spinlock.dat" using 1:2 with linespoints linewidth 2 pointtype 3 title "SpinLock"
